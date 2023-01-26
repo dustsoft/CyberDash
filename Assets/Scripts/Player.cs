@@ -4,25 +4,53 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    [Header("Movement Info")]
     [SerializeField] float _moveSpeed;
     [SerializeField] float _jumpForce;
 
+    [Header("Collision Info")]
+    public float groundCheckDistance;
+    public LayerMask whatIsGround;
     public Rigidbody2D rb;
+    bool _isGrounded;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    bool _runStarted;
 
-    // Update is called once per frame
+
     void Update()
     {
-        rb.velocity = new Vector2(_moveSpeed, rb.velocity.y);
-
-        if (Input.GetKeyDown(KeyCode.Space))
+        //Starts The Run
+        if (Input.GetButtonDown("Jump"))
         {
-            //CODE
+            _runStarted = true;
         }
+
+        CheckCollision();
+        CheckInput();
+    }
+
+    void CheckInput()
+    {
+        if (_runStarted == true)
+        {
+            //Auto Run
+            rb.velocity = new Vector2(_moveSpeed, rb.velocity.y);
+
+            //Jump Input
+            if (Input.GetButtonDown("Jump") && _isGrounded == true)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, _jumpForce);
+            }
+        }
+    }
+
+    void CheckCollision()
+    {
+        _isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, whatIsGround);
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawLine(transform.position, new Vector2(transform.position.x, transform.position.y - groundCheckDistance));
     }
 }
