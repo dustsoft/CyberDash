@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-
     [Header("Movement Info")]
     [SerializeField] float _moveSpeed;
     [SerializeField] float _jumpForce;
@@ -14,7 +13,6 @@ public class Player : MonoBehaviour
     [SerializeField] LayerMask _whatIsGround;
 
     bool _isGrounded;
-    bool _isRunning;
     bool _runStarted;
 
     Rigidbody2D _rb;
@@ -61,8 +59,9 @@ public class Player : MonoBehaviour
 
     void AnimatorController()
     {
-        _isRunning = _rb.velocity.x != 0;
-        _anim.SetBool("isRunning", _isRunning);
+        _anim.SetBool("isGrounded", _isGrounded);
+        _anim.SetFloat("xVelocity", _rb.velocity.x);
+        _anim.SetFloat("yVelocity", _rb.velocity.y);
     }
 
     private void OnDrawGizmos()
