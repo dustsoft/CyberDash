@@ -6,7 +6,6 @@ public class LevelGenerator : MonoBehaviour
 {
     [SerializeField] Transform[] _levelPart;
     [SerializeField] Vector3 _nextPartPosition;
-
     [SerializeField] float _distanceToSpawn;
     [SerializeField] float _distanceToDelete;
     [SerializeField] Transform _player;

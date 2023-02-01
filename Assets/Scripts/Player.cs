@@ -34,7 +34,7 @@ public class Player : MonoBehaviour
     void CheckInput()
     {
         //Starts The Run
-        if (Input.GetButtonDown("Jump"))
+        if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             _runStarted = true;
         }
