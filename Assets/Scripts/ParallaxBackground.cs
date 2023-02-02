@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class ParallaxBackground : MonoBehaviour
 {
-    GameObject _cam;
-
     [SerializeField] float _parallaxEffect;
+
     float _length;
     float _xPosition;
+
+    GameObject _cam;
 
     void Start()
     {
