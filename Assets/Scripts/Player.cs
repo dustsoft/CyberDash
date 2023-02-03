@@ -14,8 +14,10 @@ public class Player : MonoBehaviour
     [SerializeField] float _dashSpeed;
     [SerializeField] float _dashTime;
     [SerializeField] float _dashCoolDown;
+    public float _distanceBetweenImages;
     float _dashCoolDownCounter;
     float _dashTimeCounter;
+    float _lastImageXpos;
 
     [Header("Collision Info")]
     [SerializeField] float _groundCheckDistance;
@@ -25,10 +27,19 @@ public class Player : MonoBehaviour
     [SerializeField] Vector2 _wallCheckSize;
     [HideInInspector] public bool ledgeDetected;
 
+    [Header("Ledge Info")]
+    [SerializeField] Vector2 _offSet1; // offset for position BEFORE climb
+    [SerializeField] Vector2 _offSet2; // offset for position AFTER climb
+
+    Vector2 _climbBegunPosition;
+    Vector2 _climbOverPosition;
+
     bool _isGrounded;
     bool _isSliding;
     bool _isAirdashing;
     bool _runStarted;
+    bool _canGrabLedge = true;
+    bool _canClimb;
     bool _canDoubleJump;
     bool _canAirdash;
     bool _wallDetected;
@@ -49,6 +60,8 @@ public class Player : MonoBehaviour
     {
         CheckCollision();
 
+        CheckForLedge();
+
         AnimatorController();
 
         _dashTimeCounter = _dashTimeCounter - Time.deltaTime;
@@ -68,18 +81,71 @@ public class Player : MonoBehaviour
         CheckInput();
     }
 
+    void CheckForLedge()
+    {
+        if (ledgeDetected == true && _canGrabLedge)
+        {
+            _canGrabLedge = false;
+
+            Vector2 ledgePosition = GetComponentInChildren<LedgeDetection>().transform.position;
+
+            _climbBegunPosition = ledgePosition + _offSet1;
+            _climbOverPosition = ledgePosition + _offSet2;
+
+            _canClimb = true;
+        }
+
+        if (_canClimb == true)
+            transform.position = _climbBegunPosition;
+    }
+
+    void LedgeClimbOver()
+    {
+        _canClimb = false;
+        transform.position = _climbOverPosition;
+        Invoke("AllowLedgeGrab", 0.1f);
+    }
+
+    void AllowLedgeGrab() => _canGrabLedge = true;
+
     void CheckForDash()
     {
         if (_dashTimeCounter < 0 && _ceillingDetected == false)
         {
             _isSliding = false;
             _isAirdashing = false;
+
+        }
+
+        if (_wallDetected == true)
+        {
+            _isAirdashing = false;
+            _isSliding = false;
         }
      
     }
 
     void Movement()
     {
+        if (_isAirdashing == false)
+        {
+            _rb.constraints = RigidbodyConstraints2D.None;
+            _rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        }
+
+        //After Image FX
+        if (_isAirdashing || _isSliding)
+        {
+            AfterImagePool.Instance.GetFromPool();
+            _lastImageXpos = transform.position.x;
+
+            if (Mathf.Abs(transform.position.x - _lastImageXpos) > _distanceBetweenImages)
+            {
+                AfterImagePool.Instance.GetFromPool();
+                _lastImageXpos = transform.position.x;
+            }
+        }
+
         if (_wallDetected == true)
             return;
 
@@ -96,11 +162,6 @@ public class Player : MonoBehaviour
         {
             _rb.constraints = RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
             _rb.velocity = new Vector2(_dashSpeed, _rb.velocity.y);
-        }
-        if (_isAirdashing == false)
-        {
-            _rb.constraints = RigidbodyConstraints2D.None;
-            _rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         }
     }
 
@@ -124,6 +185,8 @@ public class Player : MonoBehaviour
 
     void DashButton()
     {
+
+
         //Slide
         if (_rb.velocity.x != 0 && _dashCoolDownCounter < 0 && _isGrounded == true)
         {
@@ -160,6 +223,7 @@ public class Player : MonoBehaviour
     void AnimatorController()
     {
         _anim.SetBool("canDoubleJump", _canDoubleJump);
+        _anim.SetBool("canClimb", _canClimb);
         _anim.SetBool("isGrounded", _isGrounded);
         _anim.SetBool("isSliding", _isSliding);
         _anim.SetBool("isAirdashing", _isAirdashing);
