@@ -10,12 +10,12 @@ public class Player : MonoBehaviour
     [SerializeField] float _jumpForce;
     [SerializeField] float _doubleJumpForce;
 
-    [Header("Slide Info")]
-    [SerializeField] float _slideSpeed;
-    [SerializeField] float _slideTime;
-    [SerializeField] float _slideCoolDown;
-    float _slideCoolDownCounter;
-    float _slideTimeCounter;
+    [Header("Dash Info")]
+    [SerializeField] float _dashSpeed;
+    [SerializeField] float _dashTime;
+    [SerializeField] float _dashCoolDown;
+    float _dashCoolDownCounter;
+    float _dashTimeCounter;
 
     [Header("Collision Info")]
     [SerializeField] float _groundCheckDistance;
@@ -23,11 +23,14 @@ public class Player : MonoBehaviour
     [SerializeField] LayerMask _whatIsGround;
     [SerializeField] Transform _wallCheck;
     [SerializeField] Vector2 _wallCheckSize;
+    [HideInInspector] public bool ledgeDetected;
 
     bool _isGrounded;
     bool _isSliding;
+    bool _isAirdashing;
     bool _runStarted;
     bool _canDoubleJump;
+    bool _canAirdash;
     bool _wallDetected;
     bool _ceillingDetected;
 
@@ -48,24 +51,31 @@ public class Player : MonoBehaviour
 
         AnimatorController();
 
-        _slideTimeCounter = _slideTimeCounter - Time.deltaTime;
-        _slideCoolDownCounter = _slideCoolDownCounter - Time.deltaTime;
+        _dashTimeCounter = _dashTimeCounter - Time.deltaTime;
+        _dashCoolDownCounter = _dashCoolDownCounter - Time.deltaTime;
 
         if (_runStarted == true)
             Movement();
 
-        if (_isGrounded)
+        if (_isGrounded == true)
+        {
             _canDoubleJump = true;
+            _canAirdash = true;
+        }
 
-        CheckForSlide();
+        CheckForDash();
 
         CheckInput();
     }
 
-    void CheckForSlide()
+    void CheckForDash()
     {
-        if (_slideTimeCounter < 0 && _ceillingDetected == false)
+        if (_dashTimeCounter < 0 && _ceillingDetected == false)
+        {
             _isSliding = false;
+            _isAirdashing = false;
+        }
+     
     }
 
     void Movement()
@@ -73,10 +83,25 @@ public class Player : MonoBehaviour
         if (_wallDetected == true)
             return;
 
-        if (_isSliding == true)
-            _rb.velocity = new Vector2(_slideSpeed, _rb.velocity.y);
-        else
+        //Running
+        if(_isSliding == false && _isGrounded == true && _isAirdashing == false)
             _rb.velocity = new Vector2(_moveSpeed, _rb.velocity.y);
+
+        //Sliding
+        if (_isSliding == true)
+            _rb.velocity = new Vector2(_dashSpeed, _rb.velocity.y);
+
+        //Airdashing
+        if (_isAirdashing == true && _isGrounded == false && _wallDetected == false)
+        {
+            _rb.constraints = RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
+            _rb.velocity = new Vector2(_dashSpeed, _rb.velocity.y);
+        }
+        if (_isAirdashing == false)
+        {
+            _rb.constraints = RigidbodyConstraints2D.None;
+            _rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        }
     }
 
     void JumpButton()
@@ -97,13 +122,23 @@ public class Player : MonoBehaviour
         }
     }
 
-    void SlideButton()
+    void DashButton()
     {
-        if (_rb.velocity.x != 0 && _slideCoolDownCounter < 0)
+        //Slide
+        if (_rb.velocity.x != 0 && _dashCoolDownCounter < 0 && _isGrounded == true)
         {
             _isSliding = true;
-            _slideTimeCounter = _slideTime;
-            _slideCoolDownCounter = _slideCoolDown;
+            _dashTimeCounter = _dashTime;
+            _dashCoolDownCounter = _dashCoolDown;
+        }
+
+        //Airdash
+        if (_rb.velocity.x != 0 && _dashCoolDownCounter < 0 && _isGrounded == false && _canAirdash == true)
+        {
+            _isAirdashing = true;
+            _canAirdash = false;
+            _dashTimeCounter = _dashTime;
+            _dashCoolDownCounter = _dashCoolDown;
         }
     }
 
@@ -117,9 +152,9 @@ public class Player : MonoBehaviour
         if (Input.GetButtonDown("Jump"))
             JumpButton();
 
-        //Slide Input
+        //Slide/AirDash Input
         if (Input.GetKeyDown(KeyCode.LeftShift))
-            SlideButton();
+            DashButton();
     }
 
     void AnimatorController()
@@ -127,6 +162,7 @@ public class Player : MonoBehaviour
         _anim.SetBool("canDoubleJump", _canDoubleJump);
         _anim.SetBool("isGrounded", _isGrounded);
         _anim.SetBool("isSliding", _isSliding);
+        _anim.SetBool("isAirdashing", _isAirdashing);
 
         _anim.SetFloat("xVelocity", _rb.velocity.x);
         _anim.SetFloat("yVelocity", _rb.velocity.y);
