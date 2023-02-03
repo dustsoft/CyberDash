@@ -531,6 +531,9 @@ MonoBehaviour:
   ledgeDetected: 0
   _offSet1: {x: -0.458, y: -1.36}
   _offSet2: {x: 0.57, y: 1.33}
+  _doubleJump: 1
+  _slide: 1
+  _airdash: 1
 --- !u!95 &179894667
 Animator:
   serializedVersion: 5

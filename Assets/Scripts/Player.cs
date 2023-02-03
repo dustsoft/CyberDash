@@ -10,6 +10,13 @@ public class Player : MonoBehaviour
     [SerializeField] float _jumpForce;
     [SerializeField] float _doubleJumpForce;
 
+    [Header("Speed Info")]
+    [SerializeField] float _maxSpeed;
+    [SerializeField] float _speedMultiplier;
+    [Space]
+    [SerializeField] float _milestoneIncreaser;
+    float _speedMilestone;
+
     [Header("Dash Info")]
     [SerializeField] float _dashSpeed;
     [SerializeField] float _dashTime;
@@ -30,6 +37,11 @@ public class Player : MonoBehaviour
     [Header("Ledge Info")]
     [SerializeField] Vector2 _offSet1; // offset for position BEFORE climb
     [SerializeField] Vector2 _offSet2; // offset for position AFTER climb
+
+    [Header("Powerup Info")]
+    [SerializeField] bool _doubleJump;
+    [SerializeField] bool _slide;
+    [SerializeField] bool _airdash;
 
     Vector2 _climbBegunPosition;
     Vector2 _climbOverPosition;
@@ -114,7 +126,6 @@ public class Player : MonoBehaviour
         {
             _isSliding = false;
             _isAirdashing = false;
-
         }
 
         if (_wallDetected == true)
@@ -175,9 +186,9 @@ public class Player : MonoBehaviour
             //Single Jump
             _rb.velocity = new Vector2(_rb.velocity.x, _jumpForce);
         }
-        else if (_canDoubleJump == true)
+        else if (_canDoubleJump == true && _doubleJump == true)
         {
-            //Double Jump
+            //Double Jump | Needs Powerup to use!
             _canDoubleJump = false;
             _rb.velocity = new Vector2(_rb.velocity.x, _doubleJumpForce);
         }
@@ -185,18 +196,16 @@ public class Player : MonoBehaviour
 
     void DashButton()
     {
-
-
-        //Slide
-        if (_rb.velocity.x != 0 && _dashCoolDownCounter < 0 && _isGrounded == true)
+        //Slide | Needs Powerup to use!
+        if (_rb.velocity.x != 0 && _dashCoolDownCounter < 0 && _isGrounded == true && _slide == true)
         {
             _isSliding = true;
             _dashTimeCounter = _dashTime;
             _dashCoolDownCounter = _dashCoolDown;
         }
 
-        //Airdash
-        if (_rb.velocity.x != 0 && _dashCoolDownCounter < 0 && _isGrounded == false && _canAirdash == true)
+        //Airdash | Needs Powerup to use!
+        if (_rb.velocity.x != 0 && _dashCoolDownCounter < 0 && _isGrounded == false && _canAirdash == true && _airdash)
         {
             _isAirdashing = true;
             _canAirdash = false;
