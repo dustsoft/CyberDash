@@ -67,11 +67,9 @@ public class Player : MonoBehaviour
         _dashTimeCounter = _dashTimeCounter - Time.deltaTime;
         _dashCoolDownCounter = _dashCoolDownCounter - Time.deltaTime;
 
-        //Unlocks Player
         if (_runStarted == true)
             Movement();
 
-        //Is On The Ground
         if (_isGrounded == true)
         {
             _canDoubleJump = true;

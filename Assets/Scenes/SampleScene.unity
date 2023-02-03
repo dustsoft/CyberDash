@@ -520,7 +520,7 @@ MonoBehaviour:
   _dashSpeed: 25
   _dashTime: 0.5
   _dashCoolDown: 0.75
-  _distanceBetweenImages: 0.17
+  _distanceBetweenImages: 0.19
   _groundCheckDistance: 1.4
   _ceillingCheckDistance: 1
   _whatIsGround:
