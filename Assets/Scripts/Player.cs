@@ -67,9 +67,11 @@ public class Player : MonoBehaviour
         _dashTimeCounter = _dashTimeCounter - Time.deltaTime;
         _dashCoolDownCounter = _dashCoolDownCounter - Time.deltaTime;
 
+        //Unlocks Player
         if (_runStarted == true)
             Movement();
 
+        //Is On The Ground
         if (_isGrounded == true)
         {
             _canDoubleJump = true;
@@ -103,7 +105,7 @@ public class Player : MonoBehaviour
     {
         _canClimb = false;
         transform.position = _climbOverPosition;
-        Invoke("AllowLedgeGrab", 0.1f);
+        Invoke("AllowLedgeGrab", 0.25f);
     }
 
     void AllowLedgeGrab() => _canGrabLedge = true;
