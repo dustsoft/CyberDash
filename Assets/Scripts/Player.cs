@@ -14,11 +14,15 @@ public class Player : MonoBehaviour
     [SerializeField] bool _doubleJump;
     [SerializeField] bool _slide;
     [SerializeField] bool _airdash;
+    [SerializeField] bool _doubleAirdash;
+
 
     [Header("Dash Info")]
     [SerializeField] float _dashSpeed;
     [SerializeField] float _dashTime;
     [SerializeField] float _dashCoolDown;
+
+    // Afterimage Variables
     float _distanceBetweenImages;
     float _dashCoolDownCounter;
     float _dashTimeCounter;
@@ -47,6 +51,7 @@ public class Player : MonoBehaviour
     bool _canClimb;
     bool _canDoubleJump;
     bool _canAirdash;
+    bool _canDoubleAirdash;
     bool _wallDetected;
     bool _ceillingDetected;
 
@@ -63,11 +68,17 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        #region CALL METHODS
+        CheckInput();
+
         CheckCollision();
 
         CheckForLedge();
 
+        CheckForDash();
+
         AnimatorController();
+        #endregion
 
         _dashTimeCounter = _dashTimeCounter - Time.deltaTime;
         _dashCoolDownCounter = _dashCoolDownCounter - Time.deltaTime;
@@ -75,15 +86,17 @@ public class Player : MonoBehaviour
         if (_runStarted == true)
             Movement();
 
+        // Dbl-Jump & Airdash Reset
         if (_isGrounded == true)
         {
             _canDoubleJump = true;
+            _canDoubleAirdash = false; // Can only dbl-airdash aftering airdashing
             _canAirdash = true;
         }
 
-        CheckForDash();
-
-        CheckInput();
+        // Double Airdash Logic Check
+        if (_doubleAirdash == true)
+            _airdash = true;
     }
 
     void CheckForLedge()
@@ -91,6 +104,7 @@ public class Player : MonoBehaviour
         if (ledgeDetected == true && _canGrabLedge)
         {
             _canGrabLedge = false;
+            _rb.gravityScale = 0;
 
             Vector2 ledgePosition = GetComponentInChildren<LedgeDetection>().transform.position;
 
@@ -107,6 +121,7 @@ public class Player : MonoBehaviour
     void LedgeClimbOver()
     {
         _canClimb = false;
+        _rb.gravityScale = 7; // 7 is the default I've been using for awhile.
         transform.position = _climbOverPosition;
         Invoke("AllowLedgeGrab", 0.1f);
     }
@@ -197,12 +212,36 @@ public class Player : MonoBehaviour
         }
 
         //Airdash | Requires Powerup to use!
-        if (_rb.velocity.x != 0 && _dashCoolDownCounter < 0 && _isGrounded == false && _canAirdash == true && _airdash == true)
+        if (_doubleAirdash == false)
         {
-            _isAirdashing = true;
-            _canAirdash = false;
-            _dashTimeCounter = _dashTime;
-            _dashCoolDownCounter = _dashCoolDown;
+            if (_rb.velocity.x != 0 && _dashCoolDownCounter < 0 && _isGrounded == false && _canAirdash && _airdash)
+            {
+                _isAirdashing = true;
+                _canAirdash = false;
+                _dashTimeCounter = _dashTime;
+                _dashCoolDownCounter = _dashCoolDown;
+            }
+        }
+
+        //Double Airdash | Requires Powerup to use!
+        if (_doubleAirdash == true)
+        {
+            if (_rb.velocity.x != 0 && _dashCoolDownCounter < 0 && _isGrounded == false && _canAirdash && _airdash && _canDoubleAirdash == false)
+            {
+                _isAirdashing = true;
+                _canDoubleAirdash = true;
+                _dashTimeCounter = _dashTime;
+                _dashCoolDownCounter = _dashCoolDown;
+            }
+
+            if (_rb.velocity.x != 0 && _dashCoolDownCounter < 0 && _isGrounded == false && _canAirdash && _canDoubleAirdash)
+            {
+                _isAirdashing = true;
+                _canDoubleAirdash = false;
+                _canAirdash = false;
+                _dashTimeCounter = _dashTime;
+                _dashCoolDownCounter = _dashCoolDown;
+            }
         }
     }
 
@@ -231,8 +270,13 @@ public class Player : MonoBehaviour
 
         _anim.SetFloat("xVelocity", _rb.velocity.x);
         _anim.SetFloat("yVelocity", _rb.velocity.y);
+
+        if (_rb.velocity.y < -24)
+            _anim.SetBool("canRoll", true);
     }
 
+    void RollAnimFinished() => _anim.SetBool("canRoll", false);
+    
     void CheckCollision()
     {
         _isGrounded = Physics2D.Raycast(transform.position, Vector2.down, _groundCheckDistance, _whatIsGround);
