@@ -10,7 +10,6 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] float _distanceToSpawn;
     [SerializeField] float _distanceToDelete;
 
-
     void Update()
     {
         DeletePlatform();

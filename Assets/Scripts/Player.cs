@@ -10,18 +10,16 @@ public class Player : MonoBehaviour
     [SerializeField] float _jumpForce;
     [SerializeField] float _doubleJumpForce;
 
-    [Header("Speed Info")]
-    [SerializeField] float _maxSpeed;
-    [SerializeField] float _speedMultiplier;
-    [Space]
-    [SerializeField] float _milestoneIncreaser;
-    float _speedMilestone;
+    [Header("Powerup Info")]
+    [SerializeField] bool _doubleJump;
+    [SerializeField] bool _slide;
+    [SerializeField] bool _airdash;
 
     [Header("Dash Info")]
     [SerializeField] float _dashSpeed;
     [SerializeField] float _dashTime;
     [SerializeField] float _dashCoolDown;
-    public float _distanceBetweenImages;
+    float _distanceBetweenImages;
     float _dashCoolDownCounter;
     float _dashTimeCounter;
     float _lastImageXpos;
@@ -37,11 +35,6 @@ public class Player : MonoBehaviour
     [Header("Ledge Info")]
     [SerializeField] Vector2 _offSet1; // offset for position BEFORE climb
     [SerializeField] Vector2 _offSet2; // offset for position AFTER climb
-
-    [Header("Powerup Info")]
-    [SerializeField] bool _doubleJump;
-    [SerializeField] bool _slide;
-    [SerializeField] bool _airdash;
 
     Vector2 _climbBegunPosition;
     Vector2 _climbOverPosition;
@@ -115,7 +108,7 @@ public class Player : MonoBehaviour
     {
         _canClimb = false;
         transform.position = _climbOverPosition;
-        Invoke("AllowLedgeGrab", 0.25f);
+        Invoke("AllowLedgeGrab", 0.1f);
     }
 
     void AllowLedgeGrab() => _canGrabLedge = true;
@@ -133,7 +126,6 @@ public class Player : MonoBehaviour
             _isAirdashing = false;
             _isSliding = false;
         }
-     
     }
 
     void Movement()
@@ -188,7 +180,7 @@ public class Player : MonoBehaviour
         }
         else if (_canDoubleJump == true && _doubleJump == true)
         {
-            //Double Jump | Needs Powerup to use!
+            //Double Jump | Requires Powerup to use!
             _canDoubleJump = false;
             _rb.velocity = new Vector2(_rb.velocity.x, _doubleJumpForce);
         }
@@ -196,7 +188,7 @@ public class Player : MonoBehaviour
 
     void DashButton()
     {
-        //Slide | Needs Powerup to use!
+        //Slide | Requires Powerup to use!
         if (_rb.velocity.x != 0 && _dashCoolDownCounter < 0 && _isGrounded == true && _slide == true)
         {
             _isSliding = true;
@@ -204,8 +196,8 @@ public class Player : MonoBehaviour
             _dashCoolDownCounter = _dashCoolDown;
         }
 
-        //Airdash | Needs Powerup to use!
-        if (_rb.velocity.x != 0 && _dashCoolDownCounter < 0 && _isGrounded == false && _canAirdash == true && _airdash)
+        //Airdash | Requires Powerup to use!
+        if (_rb.velocity.x != 0 && _dashCoolDownCounter < 0 && _isGrounded == false && _canAirdash == true && _airdash == true)
         {
             _isAirdashing = true;
             _canAirdash = false;
