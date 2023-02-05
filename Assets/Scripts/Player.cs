@@ -28,6 +28,9 @@ public class Player : MonoBehaviour
     float _dashTimeCounter;
     float _lastImageXpos;
 
+    [Header("Knockback Info")]
+    [SerializeField] Vector2 _knockbackDirection;
+
     [Header("Collision Info")]
     [SerializeField] float _groundCheckDistance;
     [SerializeField] float _ceillingCheckDistance;
@@ -44,11 +47,13 @@ public class Player : MonoBehaviour
     Vector2 _climbOverPosition;
 
     bool _isGrounded;
+    bool _isKnocked;
     bool _isSliding;
     bool _isAirdashing;
     bool _runStarted;
     bool _canGrabLedge = true;
     bool _canClimb;
+    bool _canBeKnocked = true;
     bool _canDoubleJump;
     bool _canAirdash;
     bool _canDoubleAirdash;
@@ -57,6 +62,7 @@ public class Player : MonoBehaviour
 
     Rigidbody2D _rb;
     Animator _anim;
+    SpriteRenderer _spriteRenderer;
     #endregion
 
     #region METHODS/FUNCTIONS
@@ -64,24 +70,34 @@ public class Player : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody2D>();
         _anim = GetComponent<Animator>();
+        _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     void Update()
     {
-        #region CALL METHODS
-        CheckInput();
+        if (Input.GetKeyDown(KeyCode.K)) //TEMP CODE FOR TESTING, WILL CALL FROM HAZARD HITS
+            Knockback();
 
         CheckCollision();
 
-        CheckForLedge();
-
-        CheckForDash();
-
         AnimatorController();
-        #endregion
 
         _dashTimeCounter = _dashTimeCounter - Time.deltaTime;
         _dashCoolDownCounter = _dashCoolDownCounter - Time.deltaTime;
+
+        if (_isKnocked == true)
+        {
+            if (_isAirdashing || _isSliding)
+            {
+                _rb.constraints = RigidbodyConstraints2D.None;
+                _rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+                _isSliding = false;
+                _isAirdashing = false;
+            }
+
+            return;
+        }
 
         if (_runStarted == true)
             Movement();
@@ -97,7 +113,27 @@ public class Player : MonoBehaviour
         // Double Airdash Logic Check
         if (_doubleAirdash == true)
             _airdash = true;
+
+        //SpeedController(); -- NEED TO IMPLEMENT
+
+        CheckForLedge();
+
+        CheckForDash();
+
+        CheckInput();
     }
+
+    void Knockback()
+    {
+        if (_canBeKnocked == false)
+            return;
+
+        StartCoroutine(Invincibility());
+        _isKnocked = true;
+        _rb.velocity = _knockbackDirection;
+    }
+
+    void CancelKnockback() => _isKnocked = false;
 
     void CheckForLedge()
     {
@@ -267,6 +303,7 @@ public class Player : MonoBehaviour
         _anim.SetBool("isGrounded", _isGrounded);
         _anim.SetBool("isSliding", _isSliding);
         _anim.SetBool("isAirdashing", _isAirdashing);
+        _anim.SetBool("isKnocked", _isKnocked);
 
         _anim.SetFloat("xVelocity", _rb.velocity.x);
         _anim.SetFloat("yVelocity", _rb.velocity.y);
@@ -289,6 +326,39 @@ public class Player : MonoBehaviour
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x, transform.position.y - _groundCheckDistance));
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x, transform.position.y + _ceillingCheckDistance));
         Gizmos.DrawWireCube(_wallCheck.position, _wallCheckSize);
+    }
+    #endregion
+
+    #region COROUTINES
+    IEnumerator Invincibility()
+    {
+        Color originalColor = _spriteRenderer.color;
+        Color darkenColor = new Color(_spriteRenderer.color.r, _spriteRenderer.color.g, _spriteRenderer.color.b, 0.25f);
+        Color redFlash = new Color(255f, 0f, 0f, _spriteRenderer.color.a);
+
+        _canBeKnocked = false;
+
+        _spriteRenderer.color = redFlash;
+        yield return new WaitForSeconds(0.2f);
+        _spriteRenderer.color = originalColor;
+        yield return new WaitForSeconds(0.1f);
+        _spriteRenderer.color = darkenColor;
+        yield return new WaitForSeconds(0.1f);
+        _spriteRenderer.color = originalColor;
+        yield return new WaitForSeconds(0.1f);
+        _spriteRenderer.color = darkenColor;
+        yield return new WaitForSeconds(0.1f);
+        _spriteRenderer.color = originalColor;
+        yield return new WaitForSeconds(0.1f);
+        _spriteRenderer.color = darkenColor;
+        yield return new WaitForSeconds(0.1f);
+        _spriteRenderer.color = originalColor;
+        yield return new WaitForSeconds(0.1f);
+        _spriteRenderer.color = darkenColor;
+        yield return new WaitForSeconds(0.1f);
+        _spriteRenderer.color = originalColor;
+
+        _canBeKnocked = true;
     }
     #endregion
 }

@@ -631,10 +631,11 @@ MonoBehaviour:
   _doubleJump: 1
   _slide: 1
   _airdash: 1
-  _doubleAirdash: 0
+  _doubleAirdash: 1
   _dashSpeed: 25
   _dashTime: 0.5
   _dashCoolDown: 0.75
+  _knockbackDirection: {x: -12, y: 7}
   _groundCheckDistance: 1.4
   _ceillingCheckDistance: 1
   _whatIsGround:
