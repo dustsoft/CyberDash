@@ -50,6 +50,7 @@ public class Player : MonoBehaviour
     bool _isKnocked;
     bool _isSliding;
     bool _isAirdashing;
+    bool _isDead;
     bool _runStarted;
     bool _canGrabLedge = true;
     bool _canClimb;
@@ -75,8 +76,11 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K)) //TEMP CODE FOR TESTING, WILL CALL FROM HAZARD HITS
+        if (Input.GetKeyDown(KeyCode.K)) //TEMP CODE FOR TESTING, WILL CALL FROM PROPER METHOD
             Knockback();
+
+        if (Input.GetKeyDown(KeyCode.O) && _isDead == false) //TEMP CODE FOR TESTING, WILL CALL FROM PROPER METHOD
+            StartCoroutine(Die());
 
         CheckCollision();
 
@@ -84,6 +88,9 @@ public class Player : MonoBehaviour
 
         _dashTimeCounter = _dashTimeCounter - Time.deltaTime;
         _dashCoolDownCounter = _dashCoolDownCounter - Time.deltaTime;
+
+        if (_isDead == true)
+            return;
 
         if (_isKnocked == true)
         {
@@ -359,6 +366,17 @@ public class Player : MonoBehaviour
         _spriteRenderer.color = originalColor;
 
         _canBeKnocked = true;
+    }
+
+    IEnumerator Die()
+    {
+        _isDead = true;
+        _canBeKnocked = false;
+        _rb.velocity = _knockbackDirection;
+        _anim.SetBool("isDead", true);
+
+        yield return new WaitForSeconds(3f);
+        _rb.velocity = new Vector2(0, 0);
     }
     #endregion
 }
