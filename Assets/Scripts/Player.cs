@@ -32,9 +32,12 @@ public class Player : MonoBehaviour
     [SerializeField] Vector2 _knockbackDirection;
 
     [Header("Collision Info")]
-    [SerializeField] float _groundCheckDistance;
-    [SerializeField] float _ceillingCheckDistance;
     [SerializeField] LayerMask _whatIsGround;
+    [SerializeField] Transform _groundCheck;
+    [SerializeField] float _groundCheckDistance;
+    [SerializeField] float _groundCheckRadius;
+    [Space]
+    [SerializeField] float _ceillingCheckDistance; // Need for fall anim ground check
     [SerializeField] Transform _wallCheck;
     [SerializeField] Vector2 _wallCheckSize;
     [HideInInspector] public bool ledgeDetected;
@@ -46,7 +49,8 @@ public class Player : MonoBehaviour
     Vector2 _climbBegunPosition;
     Vector2 _climbOverPosition;
 
-    bool _isGrounded;
+    public bool _isGrounded;
+    public bool _isGroundedCircleCheck;
     bool _isKnocked;
     bool _isSliding;
     bool _isAirdashing;
@@ -323,14 +327,31 @@ public class Player : MonoBehaviour
     
     void CheckCollision()
     {
+        // Ground Check Circle
+        _isGroundedCircleCheck = Physics2D.OverlapCircle(_groundCheck.position, _groundCheckRadius, _whatIsGround);
+
+        // Ground Check Line
         _isGrounded = Physics2D.Raycast(transform.position, Vector2.down, _groundCheckDistance, _whatIsGround);
+
+
+        if (_isGroundedCircleCheck == true && _isGrounded == false)
+        {
+            if (_wallDetected == false)
+                _isGrounded = true;
+        }
+
         _ceillingDetected = Physics2D.Raycast(transform.position, Vector2.up, _ceillingCheckDistance, _whatIsGround);
         _wallDetected = Physics2D.BoxCast(_wallCheck.position, _wallCheckSize, 0, Vector2.zero, 0, _whatIsGround);
     }
 
     void OnDrawGizmos()
     {
+        // Draw Circle
+        Gizmos.DrawWireSphere(_groundCheck.position, _groundCheckRadius);
+
+        // Draw Line
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x, transform.position.y - _groundCheckDistance));
+
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x, transform.position.y + _ceillingCheckDistance));
         Gizmos.DrawWireCube(_wallCheck.position, _wallCheckSize);
     }
