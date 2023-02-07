@@ -5,24 +5,32 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     #region VARIABLES
+
     [Header("Movement Info")]
     [SerializeField] float _moveSpeed;
+    [SerializeField] float _maxSpeed;
+    [SerializeField] float _speedMultiplier;
+    float _defaultSpeed;
+    [Space]
+    [SerializeField] float _milestoneIncreaser;
+    float _defaultMilestoneIncrease;
+    float _speedMilestone;
+
+    [Header("Jump Info")]
     [SerializeField] float _jumpForce;
     [SerializeField] float _doubleJumpForce;
-
+    
     [Header("Powerup Info")]
     [SerializeField] bool _doubleJump;
     [SerializeField] bool _slide;
     [SerializeField] bool _airdash;
     [SerializeField] bool _doubleAirdash;
 
-
     [Header("Dash Info")]
     [SerializeField] float _dashSpeed;
     [SerializeField] float _dashTime;
     [SerializeField] float _dashCoolDown;
 
-    // Afterimage Variables
     float _distanceBetweenImages;
     float _dashCoolDownCounter;
     float _dashTimeCounter;
@@ -49,8 +57,8 @@ public class Player : MonoBehaviour
     Vector2 _climbBegunPosition;
     Vector2 _climbOverPosition;
 
-    public bool _isGrounded;
-    public bool _isGroundedCircleCheck;
+    bool _isGrounded;
+    bool _isGroundedCircleCheck;
     bool _isKnocked;
     bool _isSliding;
     bool _isAirdashing;
@@ -76,6 +84,10 @@ public class Player : MonoBehaviour
         _rb = GetComponent<Rigidbody2D>();
         _anim = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+
+        _speedMilestone = _milestoneIncreaser;
+        _defaultSpeed = _moveSpeed;
+        _defaultMilestoneIncrease = _milestoneIncreaser;
     }
 
     void Update()
@@ -125,11 +137,11 @@ public class Player : MonoBehaviour
         if (_doubleAirdash == true)
             _airdash = true;
 
-        //SpeedController(); -- NEED TO IMPLEMENT
+        SpeedController();
 
         CheckForLedge();
 
-        CheckForDash();
+        CheckForDashCancel();
 
         CheckInput();
     }
@@ -168,14 +180,14 @@ public class Player : MonoBehaviour
     void LedgeClimbOver()
     {
         _canClimb = false;
-        _rb.gravityScale = 7; // 7 is the default I've been using for awhile.
+        _rb.gravityScale = 6; // 7 is the default I've been using for awhile, though now I'm using 6.
         transform.position = _climbOverPosition;
         Invoke("AllowLedgeGrab", 0.1f);
     }
 
     void AllowLedgeGrab() => _canGrabLedge = true;
 
-    void CheckForDash()
+    void CheckForDashCancel()
     {
         if (_dashTimeCounter < 0 && _ceillingDetected == false)
         {
@@ -190,8 +202,32 @@ public class Player : MonoBehaviour
         }
     }
 
+    void SpeedReset()
+    {
+        _moveSpeed = _defaultSpeed;
+        _milestoneIncreaser = _defaultMilestoneIncrease;
+    }
+
+    void SpeedController()
+    {
+        if (_moveSpeed == _maxSpeed)
+            return;
+
+        if (transform.position.x > _speedMilestone)
+        {
+            _speedMilestone = _speedMilestone + _milestoneIncreaser;
+
+            _moveSpeed = _moveSpeed * _speedMultiplier;
+            _milestoneIncreaser = _milestoneIncreaser * _speedMultiplier;
+
+            if (_moveSpeed > _maxSpeed)
+                _moveSpeed = _maxSpeed;
+        }
+    }
+
     void Movement()
     {
+        //Reset Player Transform Constraints After Airdash
         if (_isAirdashing == false)
         {
             _rb.constraints = RigidbodyConstraints2D.None;
@@ -212,7 +248,10 @@ public class Player : MonoBehaviour
         }
 
         if (_wallDetected == true)
+        {
+            SpeedReset();
             return;
+        }
 
         //Running
         if(_isSliding == false && _isGrounded == true && _isAirdashing == false)
