@@ -146,6 +146,14 @@ public class Player : MonoBehaviour
         CheckInput();
     }
 
+    public void Damange() //This will need to be changed later
+    {
+        //if (_moveSpeed >= _maxSpeed)
+            Knockback();
+        //else
+        //    StartCoroutine(Die());
+    }
+
     void Knockback()
     {
         if (_canBeKnocked == false)
