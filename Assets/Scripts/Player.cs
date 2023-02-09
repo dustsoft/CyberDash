@@ -148,10 +148,8 @@ public class Player : MonoBehaviour
 
     public void Damange() //This will need to be changed later
     {
-        //if (_moveSpeed >= _maxSpeed)
-            Knockback();
-        //else
-        //    StartCoroutine(Die());
+        Knockback();
+        SpeedReset();
     }
 
     void Knockback()
@@ -445,6 +443,9 @@ public class Player : MonoBehaviour
 
         yield return new WaitForSeconds(3f);
         _rb.velocity = new Vector2(0, 0);
+
+        yield return new WaitForSeconds(1f);
+        GameManager.instance.RestartLevel();
     }
     #endregion
 }
