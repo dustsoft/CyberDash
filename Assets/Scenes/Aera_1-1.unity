@@ -3771,12 +3771,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _player: {fileID: 179894665}
   _levelPart:
-  - {fileID: 5870467269595355343, guid: 0ba7443c9414840688cdda7942139389, type: 3}
-  - {fileID: 5870467269595355343, guid: 39b6055616e1849119a5280f6f303790, type: 3}
-  - {fileID: 5870467269595355343, guid: 7d27e966a331f4428a884a0ca9f107b6, type: 3}
-  - {fileID: 5870467269595355343, guid: 1746a16ea6cc042d7a0ca39de625a69f, type: 3}
-  - {fileID: 5870467269595355343, guid: e04c5c205a97341fba28da5da509173e, type: 3}
-  - {fileID: 5870467269595355343, guid: c0ae8f02bc96a40339fe7795283befdb, type: 3}
+  - {fileID: 5870467269595355343, guid: 39c0c51f63b19402f88554d78b3a52ad, type: 3}
   _nextPartPosition: {x: 0, y: 0, z: 0}
   _distanceToSpawn: 50
   _distanceToDelete: 100
