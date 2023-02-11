@@ -10,10 +10,12 @@ public class MovingTrap : Trap
 
     int _i;
 
-    void Start()
+    protected override void Start()
     {
+        base.Start();
         transform.position = _movePoint[0].position;
     }
+
 
     void Update()
     {

@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
 
     public int coins;
+    public int progressItems;
 
     void Awake()
     {

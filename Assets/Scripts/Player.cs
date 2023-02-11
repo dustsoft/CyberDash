@@ -21,7 +21,7 @@ public class Player : MonoBehaviour
     [SerializeField] float _doubleJumpForce;
     
     [Header("Powerup Info")]
-    [SerializeField] bool _doubleJump;
+    [SerializeField] public bool _doubleJump;
     [SerializeField] bool _slide;
     [SerializeField] bool _airdash;
     [SerializeField] bool _doubleAirdash;
@@ -278,6 +278,9 @@ public class Player : MonoBehaviour
     void JumpButton()
     {
         if (_isSliding == true)
+            return;
+
+        if (_canClimb == true)
             return;
 
         if (_isGrounded == true)
