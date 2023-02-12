@@ -290,7 +290,7 @@ public class Player : MonoBehaviour
         }
         else if (_canDoubleJump == true && _doubleJump == true)
         {
-            //Double Jump | Requires Powerup to use!
+            //Double Jump
             _canDoubleJump = false;
             _rb.velocity = new Vector2(_rb.velocity.x, _doubleJumpForce);
         }
@@ -298,7 +298,7 @@ public class Player : MonoBehaviour
 
     void DashButton()
     {
-        //Slide | Requires Powerup to use!
+        //Slide 
         if (_rb.velocity.x != 0 && _dashCoolDownCounter < 0 && _isGrounded == true && _slide == true)
         {
             _isSliding = true;
@@ -306,7 +306,7 @@ public class Player : MonoBehaviour
             _dashCoolDownCounter = _dashCoolDown;
         }
 
-        //Airdash | Requires Powerup to use!
+        //Airdash
         if (_doubleAirdash == false)
         {
             if (_rb.velocity.x != 0 && _dashCoolDownCounter < 0 && _isGrounded == false && _canAirdash && _airdash)
@@ -318,7 +318,7 @@ public class Player : MonoBehaviour
             }
         }
 
-        //Double Airdash | Requires Powerup to use!
+        //Double Airdash 
         if (_doubleAirdash == true)
         {
             if (_rb.velocity.x != 0 && _dashCoolDownCounter < 0 && _isGrounded == false && _canAirdash && _airdash && _canDoubleAirdash == false)

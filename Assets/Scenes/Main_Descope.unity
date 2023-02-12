@@ -633,10 +633,10 @@ MonoBehaviour:
   _milestoneIncreaser: 75
   _jumpForce: 21
   _doubleJumpForce: 18
-  _doubleJump: 0
-  _slide: 0
-  _airdash: 0
-  _doubleAirdash: 0
+  _doubleJump: 1
+  _slide: 1
+  _airdash: 1
+  _doubleAirdash: 1
   _dashSpeed: 26
   _dashTime: 0.5
   _dashCoolDown: 0.75
@@ -3771,14 +3771,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _player: {fileID: 179894665}
   _levelPart:
-  - {fileID: 5870467269595355343, guid: 39c0c51f63b19402f88554d78b3a52ad, type: 3}
-  - {fileID: 5870467269595355343, guid: 458bfed9c9eb24c1d9fb4f111b044a10, type: 3}
-  - {fileID: 5870467269595355343, guid: 34f87e1fdb8664df990ab1d0dc403c37, type: 3}
-  - {fileID: 5870467269595355343, guid: 956c674b4a55a4c98997d9faa02389d3, type: 3}
-  - {fileID: 5870467269595355343, guid: 994bafed3e7ba4afeb19d51e61b470f6, type: 3}
+  - {fileID: 5870467269595355343, guid: 7713a2a4f66bd42d3b77c8554c5ee82c, type: 3}
   _nextPartPosition: {x: 0, y: 0, z: 0}
   _distanceToSpawn: 50
-  _distanceToDelete: 200
+  _distanceToDelete: 250
 --- !u!4 &1525385167
 Transform:
   m_ObjectHideFlags: 0
