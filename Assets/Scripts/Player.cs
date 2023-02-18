@@ -204,7 +204,7 @@ public class Player : MonoBehaviour
         if (_wallDetected == true)
         {
             _isAirdashing = false;
-            _isSliding = false;
+            //_isSliding = false;
         }
     }
 

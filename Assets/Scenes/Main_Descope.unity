@@ -628,7 +628,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _moveSpeed: 12
-  _maxSpeed: 12
+  _maxSpeed: 19
   _speedMultiplier: 1.15
   _milestoneIncreaser: 75
   _jumpForce: 21
@@ -3771,7 +3771,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _player: {fileID: 179894665}
   _levelPart:
+  - {fileID: 5870467269595355343, guid: 0ba7443c9414840688cdda7942139389, type: 3}
   - {fileID: 5870467269595355343, guid: 7713a2a4f66bd42d3b77c8554c5ee82c, type: 3}
+  - {fileID: 5870467269595355343, guid: e4f6a8845a95a44b2908dce5e0abdf3c, type: 3}
+  - {fileID: 5870467269595355343, guid: f82575599156444279e913e041bdbd8f, type: 3}
+  - {fileID: 5870467269595355343, guid: 5162ea8074cdf469cb59201a9f59b82c, type: 3}
   _nextPartPosition: {x: 0, y: 0, z: 0}
   _distanceToSpawn: 50
   _distanceToDelete: 250
