@@ -57,13 +57,14 @@ public class Player : MonoBehaviour
     Vector2 _climbBegunPosition;
     Vector2 _climbOverPosition;
 
+    [HideInInspector] public bool runStarted;
+    [HideInInspector] public bool extraLife;
     bool _isGrounded;
     bool _isGroundedCircleCheck;
     bool _isKnocked;
     bool _isSliding;
     bool _isAirdashing;
     bool _isDead;
-    bool _runStarted;
     bool _canGrabLedge = true;
     bool _canClimb;
     bool _canBeKnocked = true;
@@ -81,6 +82,8 @@ public class Player : MonoBehaviour
     #region METHODS/FUNCTIONS
     void Start()
     {
+        extraLife = true;
+
         _rb = GetComponent<Rigidbody2D>();
         _anim = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
@@ -92,12 +95,6 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K)) //TEMP CODE FOR TESTING, WILL CALL FROM PROPER METHOD
-            Knockback();
-
-        if (Input.GetKeyDown(KeyCode.O) && _isDead == false) //TEMP CODE FOR TESTING, WILL CALL FROM PROPER METHOD
-            StartCoroutine(Die());
-
         CheckCollision();
 
         AnimatorController();
@@ -122,7 +119,7 @@ public class Player : MonoBehaviour
             return;
         }
 
-        if (_runStarted == true)
+        if (runStarted == true)
             Movement();
 
         // Dbl-Jump & Airdash Reset
@@ -146,10 +143,16 @@ public class Player : MonoBehaviour
         CheckInput();
     }
 
-    public void Damange() //This will need to be changed later
+    public void Damange()
     {
-        Knockback();
-        SpeedReset();
+        if (extraLife == true)
+        {
+            Knockback();
+            SpeedReset();
+            extraLife = false;
+        }
+        else if (_canBeKnocked == true)
+            StartCoroutine(Die());
     }
 
     void Knockback()
@@ -342,10 +345,6 @@ public class Player : MonoBehaviour
 
     void CheckInput()
     {
-        //Starts The Run | Unlocks The Player
-        if (Input.GetKeyDown(KeyCode.Z)) //Z is a TEMP button solution, it should be changed later
-            _runStarted = true;
-
         //Jump Input
         if (Input.GetButtonDown("Jump"))
             JumpButton();
@@ -433,7 +432,7 @@ public class Player : MonoBehaviour
         _spriteRenderer.color = darkenColor;
         yield return new WaitForSeconds(0.1f);
         _spriteRenderer.color = originalColor;
-
+        yield return new WaitForSeconds(0.5f);// TEST WAIT
         _canBeKnocked = true;
     }
 
@@ -444,11 +443,13 @@ public class Player : MonoBehaviour
         _rb.velocity = _knockbackDirection;
         _anim.SetBool("isDead", true);
 
-        yield return new WaitForSeconds(3f);
-        _rb.velocity = new Vector2(0, 0);
+        Time.timeScale = 0.6f;
 
-        yield return new WaitForSeconds(1f);
-        GameManager.instance.RestartLevel();
+        yield return new WaitForSeconds(1.5f);
+        _rb.velocity = new Vector2(0, 0);
+        yield return new WaitForSeconds(0.25f);
+
+        GameManager.instance.GameEnded();
     }
     #endregion
 }

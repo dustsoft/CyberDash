@@ -16,7 +16,6 @@ public class MovingTrap : Trap
         transform.position = _movePoint[0].position;
     }
 
-
     void Update()
     {
         transform.position = Vector3.MoveTowards(transform.position, _movePoint[_i].position, _speed * Time.deltaTime);
