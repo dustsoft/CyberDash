@@ -100,7 +100,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _chanceToSpawn: 100
   _speed: 15
-  _rotationSpeed: 15
+  _rotationSpeed: 500
   _movePoint:
   - {fileID: 6822109097244699992}
   - {fileID: 5588862615850255860}
