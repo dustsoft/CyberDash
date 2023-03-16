@@ -74,6 +74,14 @@ public class Player : MonoBehaviour
     bool _wallDetected;
     bool _ceillingDetected;
 
+    bool extendOne;
+    bool extendTwo;
+    bool extendThree;
+    bool extendFour;
+    bool extendFive;
+
+
+
     Rigidbody2D _rb;
     Animator _anim;
     SpriteRenderer _spriteRenderer;
@@ -141,6 +149,44 @@ public class Player : MonoBehaviour
         CheckForDashCancel();
 
         CheckInput();
+
+        LifeExtend();
+
+
+    }
+
+    void LifeExtend()
+    {
+        if (GameManager.instance.coins >= 100 && extendOne == false)
+        {
+            extraLife = true;
+            extendOne = true;
+        }
+
+        if (GameManager.instance.coins >= 200 && extendTwo == false)
+        {
+            extraLife = true;
+            extendTwo = true;
+        }
+
+        if (GameManager.instance.coins >= 300 && extendThree == false)
+        {
+            extraLife = true;
+            extendThree = true;
+        }
+
+        if (GameManager.instance.coins >= 400 && extendFour == false)
+        {
+            extraLife = true;
+            extendFour = true;
+        }
+
+        if (GameManager.instance.coins >= 500 && extendFive == false)
+        {
+            extraLife = true;
+            extendFive = true;
+        }
+
     }
 
     public void Damange()
